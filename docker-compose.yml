@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: agroconnect-db
+    restart: always
+    environment:
+      POSTGRES_USER: user_agro
+      POSTGRES_PASSWORD: password_agro
+      POSTGRES_DB: agroconnect
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./back_agroconnect
+    container_name: agroconnect-backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://user_agro:password_agro@db:5432/agroconnect
+      - TYPE_DB=postgres
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./front_agroconnect
+    container_name: agroconnect-frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

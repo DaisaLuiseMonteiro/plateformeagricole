@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./back_agroconnect"
+    ],
+    "python.defaultInterpreterPath": "./back_agroconnect/venv/bin/python",
+    "python.terminal.activateEnvironment": true
+}
