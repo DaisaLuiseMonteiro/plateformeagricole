@@ -31,7 +31,17 @@ const pubStats = ref([
   { label: 'Publication rejets', value: '0', color: '#ef4444' }
 ])
 
-const publications = ref([])
+interface Publication {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  farmer: string;
+  quantity: string;
+  date: string;
+}
+
+const publications = ref<Publication[]>([])
 
 const { currentPage, totalPages, paginatedItems: paginatedPublications, prevPage, nextPage } = usePagination(publications, 4)
 </script>

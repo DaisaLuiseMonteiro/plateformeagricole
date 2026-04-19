@@ -29,13 +29,15 @@ const closeModal = () => {
         <!-- Profile Header -->
         <div class="profile-banner">
           <div class="user-avatar-large">
-            {{ user.name?.charAt(0) || 'U' }}
+            {{ (user.prenom || user.user?.prenom || 'U').charAt(0) }}
           </div>
           <div class="user-main-info">
-            <h3 class="user-display-name">{{ user.name }}</h3>
+            <h3 class="user-display-name">{{ user.prenom || user.user?.prenom }} {{ user.nom || user.user?.nom }}</h3>
             <div class="badges-row">
-              <span class="badge role">{{ user.role }}</span>
-              <span class="badge status" :class="user.status?.toLowerCase()">{{ user.status }}</span>
+              <span class="badge role">{{ user.role || user.user?.role }}</span>
+              <span class="badge status" :class="(user.is_actif || user.user?.is_actif) ? 'actif' : 'suspendu'">
+                {{ (user.is_actif || user.user?.is_actif) ? 'Actif' : 'Suspendu' }}
+              </span>
             </div>
           </div>
         </div>
@@ -47,11 +49,11 @@ const closeModal = () => {
             <div class="detail-list">
               <div class="detail-item">
                 <span class="label">Email</span>
-                <span class="value">{{ user.email }}</span>
+                <span class="value">{{ user.email || user.user?.email }}</span>
               </div>
               <div class="detail-item">
                 <span class="label">Téléphone</span>
-                <span class="value">+221 77 000 00 00</span>
+                <span class="value">{{ user.telephone || user.user?.telephone || '+221 77 000 00 00' }}</span>
               </div>
               <div class="detail-item">
                 <span class="label">Date d'inscription</span>
@@ -65,12 +67,12 @@ const closeModal = () => {
             <h4 class="card-title">Résumé de l'Activité</h4>
             <div class="stats-mini-grid">
               <div class="stat-mini">
-                <span class="stat-count">{{ user.role === 'Agriculteur' ? '24' : '15' }}</span>
-                <span class="stat-label">{{ user.role === 'Agriculteur' ? 'Produits' : 'Commandes' }}</span>
+                <span class="stat-count">{{ (user.role || user.user?.role) === 'Agriculteur' ? '24' : '15' }}</span>
+                <span class="stat-label">{{ (user.role || user.user?.role) === 'Agriculteur' ? 'Produits' : 'Commandes' }}</span>
               </div>
               <div class="stat-mini">
-                <span class="stat-count">{{ user.role === 'Agriculteur' ? '142' : '3.5M' }}</span>
-                <span class="stat-label">{{ user.role === 'Agriculteur' ? 'Ventes' : 'Dépenses' }}</span>
+                <span class="stat-count">{{ (user.role || user.user?.role) === 'Agriculteur' ? '142' : '3.5M' }}</span>
+                <span class="stat-label">{{ (user.role || user.user?.role) === 'Agriculteur' ? 'Ventes' : 'Dépenses' }}</span>
               </div>
             </div>
           </div>
@@ -82,7 +84,7 @@ const closeModal = () => {
           <button class="btn-ghost">Contacter</button>
         </div>
         <div class="main-actions">
-          <button class="btn-suspend" v-if="user.status === 'Actif'">Suspendre le compte</button>
+          <button class="btn-suspend" v-if="user.is_actif || user.user?.is_actif">Suspendre le compte</button>
           <button class="btn-activate" v-else>Réactiver le compte</button>
           <button class="btn-close" @click="closeModal">Fermer</button>
         </div>

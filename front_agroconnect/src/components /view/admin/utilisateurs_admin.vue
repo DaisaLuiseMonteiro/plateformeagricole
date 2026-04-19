@@ -23,8 +23,12 @@ const userStats = ref([
 
 const users = ref<User[]>([])
 
-const getStatusClass = (status: string) => {
-  return status === 'Actif' ? 'status-active' : 'status-suspended'
+const getStatusClass = (user: User) => {
+  return user.is_actif ? 'status-active' : 'status-suspended'
+}
+
+const getStatusLabel = (user: User) => {
+  return user.is_actif ? 'Actif' : 'Suspendu'
 }
 
 const { currentPage, totalPages, paginatedItems: paginatedUsers, prevPage, nextPage } = usePagination(users, 5)
@@ -82,18 +86,18 @@ const { currentPage, totalPages, paginatedItems: paginatedUsers, prevPage, nextP
             <tbody>
               <tr v-for="user in paginatedUsers" :key="user.email">
                 <td class="user-info">
-                  <span class="u-name">{{ user.name }}</span>
+                  <span class="u-name">{{ user.prenom }} {{ user.nom }}</span>
                   <span class="u-email">{{ user.email }}</span>
                 </td>
                 <td><span class="role-badge">{{ user.role }}</span></td>
-                <td><span class="status-badge" :class="getStatusClass(user.status)">{{ user.status }}</span></td>
-                <td class="date-cell">{{ user.date }}</td>
+                <td><span class="status-badge" :class="getStatusClass(user)">{{ getStatusLabel(user) }}</span></td>
+                <td class="date-cell">N/A</td>
                 <td class="text-right">
                   <div class="action-icons">
                     <button class="icon-action view" title="Voir" @click="openDetail(user)">
                       <svg class="icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     </button>
-                    <button class="icon-action suspend" title="Suspendre">
+                    <button class="icon-action suspend" :title="user.is_actif ? 'Suspendre' : 'Activer'">
                       <svg class="icon-s" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                     </button>
                   </div>

@@ -8,6 +8,7 @@ export interface User {
   photo?: string;
   agriculteur_id?: string;
   client_id?: string;
+  is_actif?: boolean;
 }
 
 export interface RegisterData {

@@ -36,7 +36,7 @@ const getStatusClass = (status: string) => {
 
 const filteredOrders = computed(() => {
   if (activeFilter.value === 'Tous') return orders.value
-  return orders.value.filter(o => o.status === activeFilter.value)
+  return orders.value.filter(o => o.statut === activeFilter.value)
 })
 
 const { currentPage, totalPages, paginatedItems: paginatedOrders, prevPage, nextPage } = usePagination(filteredOrders, 3)
@@ -98,20 +98,20 @@ const { currentPage, totalPages, paginatedItems: paginatedOrders, prevPage, next
             <div class="order-card-left">
               <div class="order-top-meta">
                 <span class="order-id">{{ order.id }}</span>
-                <span class="status-badge" :class="getStatusClass(order.status)">{{ order.status }}</span>
+                <span class="status-badge" :class="getStatusClass(order.statut)">{{ order.statut }}</span>
               </div>
-              <h2 class="order-location">{{ order.location }}</h2>
-              <p class="order-details-txt">{{ order.details }}</p>
+              <h2 class="order-location">{{ order.date_commande }}</h2>
+              <p class="order-details-txt">{{ order.details.length }} articles - {{ order.montant_commande }} CFA</p>
             </div>
             
             <div class="order-card-right">
               <div class="production-tracking">
                 <div class="tracking-labels">
                   <span class="track-label">Production</span>
-                  <span class="track-val">{{ order.progress }}%</span>
+                  <span class="track-val">100%</span>
                 </div>
                 <div class="progress-bar-bg">
-                  <div class="progress-bar-fill" :style="{ width: order.progress + '%' }"></div>
+                  <div class="progress-bar-fill" :style="{ width: '100%' }"></div>
                 </div>
               </div>
               <button class="details-btn" @click="openDetail(order)">

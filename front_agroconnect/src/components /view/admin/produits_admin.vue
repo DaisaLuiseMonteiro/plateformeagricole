@@ -26,11 +26,16 @@ const filters = ['Tous', 'Légumes', 'Céréales', 'Fruits']
 
 const products = ref<Product[]>([])
 
-const getStatusClass = (status: string) => {
-  if (status === 'Actif') return 'status-active'
-  if (status === 'Rupture') return 'status-out'
-  if (status === 'Faible') return 'status-low'
-  return ''
+const getStatusClass = (quantity: number) => {
+  if (quantity > 10) return 'status-active'
+  if (quantity > 0) return 'status-low'
+  return 'status-out'
+}
+
+const getStatusLabel = (quantity: number) => {
+  if (quantity > 10) return 'Disponible'
+  if (quantity > 0) return 'Stock faible'
+  return 'Rupture'
 }
 
 const { currentPage, totalPages, paginatedItems: paginatedProducts, prevPage, nextPage } = usePagination(products, 5)
@@ -105,11 +110,11 @@ const { currentPage, totalPages, paginatedItems: paginatedProducts, prevPage, ne
             <tbody>
               <tr v-for="product in paginatedProducts" :key="product.id">
                 <td class="name-cell">{{ product.name }}</td>
-                <td class="cat-cell">{{ product.category }}</td>
-                <td class="price-cell">{{ product.price }}</td>
-                <td class="stock-cell">{{ product.stock }}</td>
+                <td class="cat-cell">{{ product.categorie }}</td>
+                <td class="price-cell">{{ product.prix_unitaire }} CFA</td>
+                <td class="stock-cell">{{ product.quantite_stock }}</td>
                 <td>
-                  <span class="status-badge" :class="getStatusClass(product.status)">{{ product.status }}</span>
+                  <span class="status-badge" :class="getStatusClass(product.quantite_stock)">{{ getStatusLabel(product.quantite_stock) }}</span>
                 </td>
                 <td class="actions-cell">
                   <button class="icon-btn view-btn" title="Voir" @click="openDetail(product)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
