@@ -15,9 +15,16 @@ app = FastAPI(
 )
 
 # Configuration CORS
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://plateformeagricole.vercel.app",
+    "https://plateformeagricole-coc8qixax.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Autorise tous les domaines (Vercel, local, etc.)
+    allow_origins=origins + ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

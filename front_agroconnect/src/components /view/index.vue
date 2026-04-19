@@ -22,6 +22,8 @@ const authPopupMessage = ref('');
 const authPopupVerb = ref('');
 
 const products = ref<Product[]>([]);
+const isLoading = ref(false);
+const fetchError = ref<string | null>(null);
 
 const categories = ref<Category[]>([
   { id: 1, name: 'Tous les produits', count: 0, icon: '📦' },
@@ -47,6 +49,8 @@ const handleCategoryChange = (category: string) => {
 };
 
 const fetchProducts = async () => {
+  isLoading.value = true;
+  fetchError.value = null;
   try {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
     const response = await fetch(`${API_BASE_URL}/produits`);
@@ -83,9 +87,14 @@ const fetchProducts = async () => {
           count: products.value.filter(p => p.categorie === backendCat).length 
         };
       });
+    } else {
+      fetchError.value = "Impossible de charger les produits. Veuillez réessayer plus tard.";
     }
   } catch (error) {
     console.error('Erreur lors du chargement des produits:', error);
+    fetchError.value = "Erreur de connexion au serveur. Vérifiez que le backend est en ligne.";
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -130,7 +139,20 @@ const handleAddToCart = (product: Product) => {
       </div>
     </div>
 
-    <div class="product-grid">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Chargement des produits...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="fetchError" class="error-container">
+      <div class="error-icon">⚠️</div>
+      <p>{{ fetchError }}</p>
+      <button @click="fetchProducts" class="retry-btn">Réessayer</button>
+    </div>
+
+    <div v-else class="product-grid">
       <div v-for="product in paginatedProducts" :key="product.id" class="product-card">
         <div class="product-image-container">
           <img :src="product.photo || 'https://via.placeholder.com/300x200'" :alt="product.name" class="product-image" />
