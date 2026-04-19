@@ -11,3 +11,6 @@ anyio==4.12.1
 starlette==0.52.1
 typing_extensions==4.15.0
 alembic==1.13.1
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.1
+passlib==1.7.4

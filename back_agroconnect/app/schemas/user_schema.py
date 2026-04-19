@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
+import re
 from typing import Optional
 from app.models.user_model import RoleEnum
 
@@ -12,9 +13,16 @@ class UserCreate(BaseModel):
     prenom      : str
     email       : str
     mot_de_pass : str
-    telephone   : Optional[str] = None
+    telephone   : str
     role        : RoleEnum
     photo       : Optional[str] = None
+
+    @field_validator("telephone")
+    @classmethod
+    def validate_senegal_phone(cls, v: str) -> str:
+        if not re.match(r"^(70|71|75|76|77|78)[0-9]{7}$", v):
+            raise ValueError("Le numéro de téléphone doit être un numéro sénégalais valide (ex: 775312222)")
+        return v
 
 
 class UserUpdate(BaseModel):
