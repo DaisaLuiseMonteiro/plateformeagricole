@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   filter:
@@ -40,7 +41,10 @@ jobs:
 
   deploy-frontend:
     needs: [filter, build-check]
-    if: needs.filter.outputs.frontend == 'true'
+    if: |
+      always() && 
+      (needs.filter.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch') &&
+      needs.build-check.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -52,7 +56,10 @@ jobs:
 
   deploy-backend:
     needs: [filter, build-check]
-    if: needs.filter.outputs.backend == 'true'
+    if: |
+      always() && 
+      (needs.filter.outputs.backend == 'true' || github.event_name == 'workflow_dispatch') &&
+      needs.build-check.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Render
