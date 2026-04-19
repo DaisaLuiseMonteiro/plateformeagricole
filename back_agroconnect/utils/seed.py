@@ -267,7 +267,7 @@ def seed_all():
         # COMMIT FINAL
         # ============================================================
         db.commit()
-        print("\n🎉 Seed terminé avec succès !")
+        print("\n Seed terminé avec succès !")
         print("=" * 50)
         print("Admin       : admin@gmail.com / admin123")
         print("Agriculteurs: *@agroconnect.sn / agri123")
