@@ -5,9 +5,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import SessionLocal
-from app.models import UserModel, AdministrateurModel, AgriculteurModel, ClientModel, ProduitModel, RoleEnum, NotificationModel
+from app.models import UserModel, AdministrateurModel, AgriculteurModel, ClientModel, ProduitModel, RoleEnum
 from app.models.produit_model import CategorieEnum, StatutPublicationEnum
-from app.models.commande_model import CommandeModel, DetailsModel, StatutEnum
 
 import bcrypt
 if not hasattr(bcrypt, "__about__"):
@@ -30,7 +29,7 @@ def seed_all():
         existing_admin = db.query(UserModel).filter(UserModel.email == "admin@gmail.com").first()
 
         if existing_admin:
-            print("Admin déjà existant — ignoré.")
+            print("⏩ Admin déjà existant — ignoré.")
         else:
             admin_user = UserModel(
                 id          = str(uuid.uuid4()),
@@ -265,231 +264,13 @@ def seed_all():
             print(f" Client créé : {cl['prenom']} {cl['nom']} ({cl['email']} / client123)")
 
         # ============================================================
-        # 5. COMMANDES (6 commandes avec détails)
-        # ============================================================
-        # Récupérer les IDs des clients et produits créés
-        all_clients = db.query(ClientModel).all()
-        all_produits = db.query(ProduitModel).all()
-
-        if len(all_clients) >= 5 and len(all_produits) >= 12:
-            from datetime import date, timedelta
-
-            commandes_data = [
-                # Client 1 — Ousmane Ba : 2 produits (Riz Carolina + Banane)
-                {
-                    "client_id": all_clients[0].id,
-                    "date": date.today() - timedelta(days=15),
-                    "statut": StatutEnum.CONFIRMEE,
-                    "details": [
-                        {"produit_index": 0, "quantite": 5},   # Riz Carolina
-                        {"produit_index": 7, "quantite": 10},  # Banane
-                    ]
-                },
-                # Client 2 — Aissatou Sarr : 3 produits (Kiwi + Goyave + Raisin)
-                {
-                    "client_id": all_clients[1].id,
-                    "date": date.today() - timedelta(days=10),
-                    "statut": StatutEnum.VALIDEE,
-                    "details": [
-                        {"produit_index": 3, "quantite": 3},   # Kiwi
-                        {"produit_index": 4, "quantite": 5},   # Goyave
-                        {"produit_index": 5, "quantite": 2},   # Raisin
-                    ]
-                },
-                # Client 3 — Moussa Gueye : 2 produits (Gombo + Aubergine)
-                {
-                    "client_id": all_clients[2].id,
-                    "date": date.today() - timedelta(days=7),
-                    "statut": StatutEnum.EN_ATTENTE,
-                    "details": [
-                        {"produit_index": 10, "quantite": 8},  # Gombo
-                        {"produit_index": 11, "quantite": 4},  # Aubergine
-                    ]
-                },
-                # Client 4 — Mariama Diouf : 2 produits (Datte + Carotte)
-                {
-                    "client_id": all_clients[3].id,
-                    "date": date.today() - timedelta(days=3),
-                    "statut": StatutEnum.EN_ATTENTE,
-                    "details": [
-                        {"produit_index": 6, "quantite": 6},   # Datte
-                        {"produit_index": 8, "quantite": 10},  # Carotte
-                    ]
-                },
-                # Client 5 — Lamine Camara : 2 produits (Arachide + Mil)
-                {
-                    "client_id": all_clients[4].id,
-                    "date": date.today() - timedelta(days=1),
-                    "statut": StatutEnum.CONFIRMEE,
-                    "details": [
-                        {"produit_index": 2, "quantite": 15},  # Arachide
-                        {"produit_index": 1, "quantite": 20},  # Mil
-                    ]
-                },
-                # Client 1 — Ousmane Ba : 2e commande (Patate + Gombo)
-                {
-                    "client_id": all_clients[0].id,
-                    "date": date.today(),
-                    "statut": StatutEnum.EN_ATTENTE,
-                    "details": [
-                        {"produit_index": 9, "quantite": 7},   # Patate
-                        {"produit_index": 10, "quantite": 3},  # Gombo
-                    ]
-                },
-            ]
-
-            for cmd in commandes_data:
-                montant_total = 0
-                details_list = []
-
-                for det in cmd["details"]:
-                    produit = all_produits[det["produit_index"]]
-                    montant = produit.prix_unitaire * det["quantite"]
-                    montant_total += montant
-                    details_list.append({
-                        "produit_id": produit.id,
-                        "quantite": det["quantite"],
-                        "montant": montant
-                    })
-
-                commande = CommandeModel(
-                    id               = str(uuid.uuid4()),
-                    date_commande    = cmd["date"],
-                    statut           = cmd["statut"],
-                    montant_commande = montant_total,
-                    client_id        = cmd["client_id"]
-                )
-                db.add(commande)
-                db.flush()
-
-                for det in details_list:
-                    detail = DetailsModel(
-                        id          = str(uuid.uuid4()),
-                        quantite    = det["quantite"],
-                        montant     = det["montant"],
-                        commande_id = commande.id,
-                        produit_id  = det["produit_id"]
-                    )
-                    db.add(detail)
-
-            db.flush()
-            print(" 6 commandes créées avec succès !")
-        else:
-            print(" Pas assez de clients/produits pour créer les commandes.")
-
-        # ============================================================
-        # 6. NOTIFICATIONS
-        # ============================================================
-        from datetime import datetime, timedelta as td2
-
-        admin_user_obj = db.query(UserModel).filter(UserModel.email == "admin@gmail.com").first()
-        all_agri_users = db.query(UserModel).filter(UserModel.role == RoleEnum.AGRICULTEUR).all()
-        all_client_users = db.query(UserModel).filter(UserModel.role == RoleEnum.CLIENT).all()
-
-        notifications_data = []
-
-        # Notifications pour l'admin
-        if admin_user_obj:
-            notifications_data.extend([
-                {
-                    "user_id": admin_user_obj.id,
-                    "titre": "Nouveau produit soumis",
-                    "message": "Mamadou Diallo a soumis un nouveau produit : Riz Carolina. Veuillez le valider.",
-                    "type": "action_required",
-                    "est_lu": False,
-                    "date": datetime.utcnow() - td2(hours=5)
-                },
-                {
-                    "user_id": admin_user_obj.id,
-                    "titre": "Nouvelle commande",
-                    "message": "Ousmane Ba a passe une commande de 12,500 FCFA. En attente de validation.",
-                    "type": "action_required",
-                    "est_lu": False,
-                    "date": datetime.utcnow() - td2(hours=3)
-                },
-                {
-                    "user_id": admin_user_obj.id,
-                    "titre": "Nouvel agriculteur inscrit",
-                    "message": "Aminata Fall vient de s'inscrire en tant qu'agriculteur depuis Kaolack.",
-                    "type": "info",
-                    "est_lu": True,
-                    "date": datetime.utcnow() - td2(days=2)
-                },
-                {
-                    "user_id": admin_user_obj.id,
-                    "titre": "Stock faible",
-                    "message": "Le produit Kiwi de Fatou Ndiaye n'a plus que 80 unites en stock.",
-                    "type": "info",
-                    "est_lu": True,
-                    "date": datetime.utcnow() - td2(days=3)
-                },
-            ])
-
-        # Notifications pour les agriculteurs
-        for agri_user in all_agri_users:
-            notifications_data.extend([
-                {
-                    "user_id": agri_user.id,
-                    "titre": "Produit valide",
-                    "message": "Votre produit a ete valide par l'administrateur et est maintenant visible.",
-                    "type": "info",
-                    "est_lu": False,
-                    "date": datetime.utcnow() - td2(hours=8)
-                },
-                {
-                    "user_id": agri_user.id,
-                    "titre": "Nouvelle commande recue",
-                    "message": "Un client a commande vos produits. Consultez vos ventes pour plus de details.",
-                    "type": "info",
-                    "est_lu": False,
-                    "date": datetime.utcnow() - td2(hours=2)
-                },
-            ])
-
-        # Notifications pour les clients
-        for client_user in all_client_users:
-            notifications_data.extend([
-                {
-                    "user_id": client_user.id,
-                    "titre": "Commande confirmee",
-                    "message": "Votre commande a ete confirmee par l'administrateur. Elle sera livree prochainement.",
-                    "type": "info",
-                    "est_lu": False,
-                    "date": datetime.utcnow() - td2(hours=6)
-                },
-                {
-                    "user_id": client_user.id,
-                    "titre": "Bienvenue sur AgroConnect",
-                    "message": "Bienvenue ! Decouvrez nos produits frais directement des agriculteurs senegalais.",
-                    "type": "info",
-                    "est_lu": True,
-                    "date": datetime.utcnow() - td2(days=5)
-                },
-            ])
-
-        for notif in notifications_data:
-            notification = NotificationModel(
-                id           = str(uuid.uuid4()),
-                user_id      = notif["user_id"],
-                titre        = notif["titre"],
-                message      = notif["message"],
-                type         = notif["type"],
-                est_lu       = notif["est_lu"],
-                date_creation = notif["date"]
-            )
-            db.add(notification)
-
-        db.flush()
-        print(f" {len(notifications_data)} notifications creees avec succes !")
-
-        # ============================================================
         # COMMIT FINAL
         # ============================================================
         db.commit()
-        print("\nSeed termine avec succes !")
+        print("\n🎉 Seed terminé avec succès !")
         print("=" * 50)
         print("Admin       : admin@gmail.com / admin123")
-        print("Agriculteurs: *@agroconnect.com / agri123")
+        print("Agriculteurs: *@agroconnect.sn / agri123")
         print("Clients     : *@gmail.com / client123")
         print("=" * 50)
 

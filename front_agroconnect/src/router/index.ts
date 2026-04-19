@@ -7,6 +7,7 @@ import Login from '@/components /view/auth/login.vue'
 import Register from '@/components /view/auth/register.vue'
 import resetPassword from '@/components /view/auth/resetPassword.vue'
 import User from '@/components /view/auth/user.vue'
+import AboutUs from '@/components /view/AboutUs.vue'
 
 // Client Components
 import Panier from '@/components /view/client/panier.vue'
@@ -38,6 +39,7 @@ const routes= [
     {path: '/user', name:"interface utilisateur",component: User},
     {path: '/panier', name:"panier",component: Panier},
     {path: '/mes-commandes', name:"mes-commandes",component: CommandeCl},
+    {path: '/a-propos', name:"a-propos",component: AboutUs},
 
     // Admin Routes
     { path: '/admin/dashboard', name: 'admin-dashboard', component: TableauAdmin },

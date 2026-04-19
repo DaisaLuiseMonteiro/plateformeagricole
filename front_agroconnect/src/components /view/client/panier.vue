@@ -68,7 +68,7 @@ const goToHome = () => router.push('/');
           <div class="item-details">
             <h3 class="item-name">{{ item.product.name }}</h3>
             <p class="item-farm">Catégorie: {{ item.product.categorie }}</p>
-            <p class="item-price">{{ formatPrice(item.product.prix_unitaire) }} FCFA</p>
+            <p class="item-price">{{ formatPrice(item.product.prix_unitaire) }} FCFA/kg</p>
           </div>
           <div class="item-controls">
             <button class="qty-btn" @click="updateQuantity(item.product.id, -1)">−</button>
@@ -94,20 +94,25 @@ const goToHome = () => router.push('/');
 
       <!-- Right: Summary -->
       <div class="cart-summary" v-if="cartItems.length > 0">
-        <h2 class="summary-title">Résumé</h2>
+        <h2 class="summary-title">Recaputilatif de votre commande</h2>
         <div class="summary-lines">
           <div v-for="item in cartItems" :key="'s-' + item.product.id" class="summary-line">
-            <span class="summary-label">{{ item.product.name }} × {{ item.quantity }}</span>
+            <span class="summary-label">{{ item.product.name }} ({{ item.quantity }})</span>
             <span class="summary-value">{{ formatPrice(itemTotal(item)) }} FCFA</span>
           </div>
         </div>
         <div class="summary-divider"></div>
         <div class="summary-total">
-          <span class="total-label">Total</span>
+          <span class="total-label">Montant à régler</span>
           <span class="total-value">{{ formatPrice(grandTotal) }} FCFA</span>
         </div>
+        
+        <div class="indication-validation">
+          <p>Validez votre commande !</p>
+        </div>
+
         <button class="order-btn" @click="handleCommander">
-          Commander
+          Valider ma commande
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" class="arrow-icon">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>
@@ -338,6 +343,20 @@ const goToHome = () => router.push('/');
   color: #209216;
 }
 
+.indication-validation {
+  background-color: #fef2f2;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+}
+
+.indication-validation p {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0;
+}
+
 .order-btn {
   width: 100%;
   padding: 0.9rem 1.5rem;
@@ -354,12 +373,13 @@ const goToHome = () => router.push('/');
   gap: 0.5rem;
   transition: all 0.2s ease;
   font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 .order-btn:hover {
-  background: #1a7a12;
+  background: #0d5b06;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(32, 146, 22, 0.3);
+  box-shadow: 0 6px 16px rgba(65, 99, 70, 0.4);
 }
 
 .arrow-icon {

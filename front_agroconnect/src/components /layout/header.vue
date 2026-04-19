@@ -3,12 +3,14 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotificationStore } from '@/stores/utilitaires/notification_store'
 import { useAuthStore } from '@/stores/auth/auth_store'
+import { usePanierStore } from '@/stores/panier/panier_store'
 import AuthPopup from '@/components /view/popup/AuthPopup.vue'
 import ProductionFormPopup from '@/components /view/popup/ProductionFormPopup.vue'
 
 const router = useRouter();
 const notificationStore = useNotificationStore()
 const authStore = useAuthStore()
+const panierStore = usePanierStore()
 const emit = defineEmits(['category-selected']);
 
 const isCategoryOpen = ref(false);
@@ -39,9 +41,19 @@ const checkAuthForAction = (action: () => void, message: string, verb: string) =
   }
 };
 const goToNotifications = () => {
-  notificationStore.markAsRead()
-  router.push('/user') // Ou une page spécifique de notifications si elle existe
+  checkAuthForAction(() => {
+    notificationStore.markAsRead()
+    router.push('/user') // Ou une page spécifique de notifications si elle existe
+  }, 'pour voir vos notifications', 'voir');
 }
+
+const goToProfile = () => {
+  if (authStore.isAuthenticated) {
+    router.push('/user'); // Ou une page de profil spécifique
+  } else {
+    router.push('/login');
+  }
+};
 
 const selectCategory = (category: string) => {
   emit('category-selected', category);
@@ -76,18 +88,26 @@ const selectCategory = (category: string) => {
             <svg class="icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            <span v-if="notificationStore.hasUnread" class="dot-badge"></span>
+            <span v-if="notificationStore.hasUnread" class="dot-badge badge-red"></span>
           </div>
           <div class="action-icons">
-            <button class="icon-btn" aria-label="Profile">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-            </button>
+            <div class="icon-wrapper">
+              <button class="icon-btn" aria-label="Profile" @click="goToProfile">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              </button>
+              <span v-if="authStore.isAuthenticated" class="dot-badge badge-green"></span>
+            </div>
+            
             <button class="icon-btn" aria-label="Wishlist">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
             </button>
-            <button class="icon-btn" aria-label="Cart" @click="goToPanier">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-            </button>
+
+            <div class="icon-wrapper">
+              <button class="icon-btn" aria-label="Cart" @click="goToPanier">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              </button>
+              <span v-if="panierStore.totalItems > 0" class="dot-badge badge-red"></span>
+            </div>
           </div>
         </div>
       </div>
@@ -235,16 +255,31 @@ const selectCategory = (category: string) => {
   margin-right: 50px;
 }
 
-.notification-trigger {
+.action-icons {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.icon-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  position: relative;
-  cursor: pointer;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
   color: white;
+  cursor: pointer;
+  padding: 0.25rem;
   transition: transform 0.2s;
 }
 
-.icon-small {
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+
+.icon-btn svg {
   width: 24px;
   height: 24px;
 }
@@ -255,27 +290,16 @@ const selectCategory = (category: string) => {
   right: -4px;
   width: 10px;
   height: 10px;
-  background-color: #fbbf24;
   border: 2px solid #209216;
   border-radius: 50%;
 }
 
-.notification-trigger:hover {
-  transform: scale(1.1);
+.badge-red {
+  background-color: #ef4444; /* Rouge vif */
 }
 
-.action-icons {
-  display: flex;
-  gap: 1.25rem;
-}
-
-.icon-btn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 0.25rem;
-  transition: transform 0.2s;
+.badge-green {
+  background-color: #10b981; /* Vert émeraude */
 }
 
 .icon-btn:hover {

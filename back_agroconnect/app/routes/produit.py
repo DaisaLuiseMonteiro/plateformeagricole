@@ -67,7 +67,12 @@ def ajouter_produit(produit_data: ProduitCreate, db: Session = Depends(get_db)):
             detail=f"Erreur interne du serveur : {str(e)}"
         )
 
-    return produits
+@router.get("/", response_model=list[ProduitRead])
+def lister_tous_les_produits(db: Session = Depends(get_db)):
+    """Récupère tous les produits de la plateforme."""
+    return db.query(ProduitModel).all()
+
+
 
 
 @router.get("/agriculteur/{agriculteur_id}", response_model=list[ProduitRead])

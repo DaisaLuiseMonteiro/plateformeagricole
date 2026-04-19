@@ -22,8 +22,24 @@ jobs:
             backend:
               - 'back_agroconnect/**'
 
+  build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Frontend Build Check
+        run: |
+          cd front_agroconnect
+          npm install
+          npm run build
+          
+      - name: Backend Syntax Check
+        run: |
+          cd back_agroconnect
+          python3 -m compileall .
+
   deploy-frontend:
-    needs: filter
+    needs: [filter, build-check]
     if: needs.filter.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +54,7 @@ jobs:
           vercel-args: '--prod'
 
   deploy-backend:
-    needs: filter
+    needs: [filter, build-check]
     if: needs.filter.outputs.backend == 'true'
     runs-on: ubuntu-latest
     steps:

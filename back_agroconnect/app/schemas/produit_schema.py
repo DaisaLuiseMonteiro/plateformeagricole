@@ -9,6 +9,7 @@ from app.models.produit_model import CategorieEnum, StatutPublicationEnum
 # ============================================================
 
 class ProduitCreate(BaseModel):
+    nom            : str
     prix_unitaire  : float
     description    : Optional[str] = None
     quantite_stock : int
@@ -18,6 +19,7 @@ class ProduitCreate(BaseModel):
 
 
 class ProduitUpdate(BaseModel):
+    nom            : Optional[str]           = None
     prix_unitaire  : Optional[float]         = None
     description    : Optional[str]           = None
     quantite_stock : Optional[int]           = None
@@ -27,6 +29,7 @@ class ProduitUpdate(BaseModel):
 
 class ProduitRead(BaseModel):
     id             : str
+    nom            : Optional[str]
     prix_unitaire  : float
     description    : Optional[str]
     quantite_stock : int

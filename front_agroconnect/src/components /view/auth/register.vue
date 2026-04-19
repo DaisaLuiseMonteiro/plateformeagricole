@@ -25,6 +25,11 @@ const form = ref({
   adresse: ''
 })
 
+const showPassword = ref(false)
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+}
+
 const errors = ref<Record<string, string>>({})
 
 onMounted(() => {
@@ -203,7 +208,6 @@ const handleSubmit = async () => {
             </div>
             <span v-if="authStore.fieldErrors.adresse" class="error-msg">{{ authStore.fieldErrors.adresse }}</span>
           </div>
-
           <!-- Mot de passe -->
           <div class="form-group">
             <label class="form-label">Mot de passe</label>
@@ -212,7 +216,27 @@ const handleSubmit = async () => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              <input type="password" v-model="form.mot_de_pass" placeholder="Mot de passe" class="form-input" :class="{ 'input-error': authStore.fieldErrors.mot_de_pass }" />
+              <input 
+                :type="showPassword ? 'text' : 'password'" 
+                v-model="form.mot_de_pass" 
+                placeholder="Mot de passe" 
+                class="form-input password-input" 
+                :class="{ 'input-error': authStore.fieldErrors.mot_de_pass }" 
+              />
+              <button 
+                type="button" 
+                class="toggle-password" 
+                @click="togglePassword"
+                attr-label="Toggle password visibility"
+              >
+                <svg v-if="!showPassword" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg v-else fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
+              </button>
             </div>
             <span v-if="authStore.fieldErrors.mot_de_pass" class="error-msg">{{ authStore.fieldErrors.mot_de_pass }}</span>
           </div>
@@ -225,7 +249,12 @@ const handleSubmit = async () => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              <input type="password" v-model="form.confirmPassword" placeholder="Confirmer mot de passe" class="form-input" />
+              <input 
+                :type="showPassword ? 'text' : 'password'" 
+                v-model="form.confirmPassword" 
+                placeholder="Confirmer mot de passe" 
+                class="form-input password-input" 
+              />
             </div>
           </div>
 
@@ -439,6 +468,35 @@ const handleSubmit = async () => {
 .form-input:focus {
   border-color: #209216;
   box-shadow: 0 0 0 3px rgba(32, 146, 22, 0.15);
+}
+
+.password-input {
+  padding-right: 2.75rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.toggle-password:hover {
+  color: #209216;
+}
+
+.toggle-password svg {
+  width: 20px;
+  height: 20px;
 }
 
 .form-select {

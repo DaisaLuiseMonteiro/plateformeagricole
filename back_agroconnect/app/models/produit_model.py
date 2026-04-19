@@ -21,6 +21,7 @@ class ProduitModel(Base):
     __tablename__ = "produits"
 
     id             = Column(String,  primary_key=True, default=lambda: str(uuid.uuid4()))
+    nom            = Column(String,  nullable=True)
     prix_unitaire  = Column(Float,   nullable=False)
     description    = Column(String,  nullable=True)
     quantite_stock = Column(Integer, nullable=False, default=0)

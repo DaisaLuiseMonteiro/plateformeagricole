@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Header from '@/components /layout/header.vue';
 import AuthPopup from '@/components /view/popup/AuthPopup.vue';
 import { usePagination } from '@/stores/utilitaires/utilitaire_store';
 import { useAuthStore } from '@/stores/auth/auth_store';
 import { usePanierStore } from '@/stores/panier/panier_store';
+import type { Product } from '@/interface/Product';
+
+interface Category {
+  id: number;
+  name: string;
+  count: number;
+  icon: string;
+}
 
 const authStore = useAuthStore();
 const panierStore = usePanierStore();
@@ -13,22 +21,22 @@ const isAuthPopupOpen = ref(false);
 const authPopupMessage = ref('');
 const authPopupVerb = ref('');
 
-const products: { id: string; name: string; category: string; price: number; displayPrice: string; image: string; stock: number; agriculteur_id: string }[] = [];
+const products = ref<Product[]>([]);
 
-const categories = [
+const categories = ref<Category[]>([
   { id: 1, name: 'Tous les produits', count: 0, icon: '📦' },
   { id: 2, name: 'Légumes', count: 0, icon: '🥬' },
   { id: 3, name: 'Fruits', count: 0, icon: '🥭' },
   { id: 4, name: 'Céréales', count: 0, icon: '🌾' }
-];
+]);
 
 const selectedCategory = ref('Tous les produits');
 
 const filteredProducts = computed(() => {
   if (selectedCategory.value === 'Tous les produits') {
-    return products;
+    return products.value;
   }
-  return products.filter(p => p.category === selectedCategory.value);
+  return products.value.filter(p => p.categorie === selectedCategory.value);
 });
 
 const { currentPage, totalPages, paginatedItems: paginatedProducts, goToPage } = usePagination(filteredProducts, 10);
@@ -38,18 +46,67 @@ const handleCategoryChange = (category: string) => {
   currentPage.value = 1;
 };
 
-const handleAddToCart = (product: any) => {
+const fetchProducts = async () => {
+  try {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+    const response = await fetch(`${API_BASE_URL}/produits`);
+    if (response.ok) {
+      const data = await response.json();
+      // Filtrer uniquement les produits publiés
+      const publishedProducts = data.filter((p: any) => p.statut_publication === 'publie');
+      
+      products.value = publishedProducts.map((p: any) => ({
+        id: p.id,
+        name: p.nom || p.description?.substring(0, 20) || 'Sans nom',
+        prix_unitaire: p.prix_unitaire,
+        description: p.description,
+        quantite_stock: p.quantite_stock,
+        photo: p.photo || 'https://via.placeholder.com/300x200',
+        categorie: p.categorie,
+        agriculteur_id: p.agriculteur_id
+      }));
+
+      // Mettre à jour les compteurs de manière sûre
+      categories.value = categories.value.map(cat => {
+        if (cat.name === 'Tous les produits') {
+          return { ...cat, count: products.value.length };
+        }
+        // Mapping des catégories pour le filtre
+        const catMap: Record<string, string> = {
+          'Légumes': 'legume',
+          'Fruits': 'fruit',
+          'Céréales': 'cereale'
+        };
+        const backendCat = catMap[cat.name];
+        return { 
+          ...cat, 
+          count: products.value.filter(p => p.categorie === backendCat).length 
+        };
+      });
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des produits:', error);
+  }
+};
+
+onMounted(() => {
+  fetchProducts();
+});
+
+const handleAddToCart = (product: Product) => {
+  console.log('Ajout au panier:', product);
   if (authStore.isAuthenticated) {
     panierStore.ajouterAuPanier({
       id: product.id,
       name: product.name,
-      prix_unitaire: product.price,
-      description: '',
-      quantite_stock: product.stock,
-      photo: product.image,
-      categorie: product.category,
+      prix_unitaire: product.prix_unitaire,
+      description: product.description,
+      quantite_stock: product.quantite_stock,
+      photo: product.photo,
+      categorie: product.categorie,
       agriculteur_id: product.agriculteur_id
     });
+    console.log('Produit ajouté avec succès');
   } else {
     authPopupMessage.value = 'pour pouvoir commander';
     authPopupVerb.value = 'commander';
@@ -76,12 +133,13 @@ const handleAddToCart = (product: any) => {
     <div class="product-grid">
       <div v-for="product in paginatedProducts" :key="product.id" class="product-card">
         <div class="product-image-container">
-          <img :src="product.image" :alt="product.name" class="product-image" />
+          <img :src="product.photo || 'https://via.placeholder.com/300x200'" :alt="product.name" class="product-image" />
         </div>
         <div class="product-info-row">
           <div class="text-info">
             <h3 class="product-name">{{ product.name }}</h3>
-            <p class="product-price">{{ product.displayPrice }}</p>
+            <p class="product-category-text">{{ product.categorie }}</p>
+            <p class="product-price">{{ product.prix_unitaire }} CFA/kg</p>
           </div>
           <div class="action-buttons">
             <button class="action-btn favorite-btn" aria-label="Add to favorites">
@@ -149,7 +207,7 @@ const handleAddToCart = (product: any) => {
 
 /* --- Main Content --- */
 .main-content {
-  padding: 2rem 50px;
+  padding: 0.6rem 20px;
     background: rgb(238, 247, 241);
 
   min-height: calc(100vh - 140px);
@@ -162,7 +220,7 @@ const handleAddToCart = (product: any) => {
 }
 
 .product-card {
-  height: 270px;
+  height: 280px;
   background: white;
   border-radius: 12px;
   overflow: hidden;
@@ -173,12 +231,11 @@ const handleAddToCart = (product: any) => {
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .product-image-container {
-  height: 70%;
+  height: 65%;
   width: 100%;
   background: white;
   padding: 0;
@@ -215,10 +272,20 @@ const handleAddToCart = (product: any) => {
 }
 
 .product-price {
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #209216;
   margin: 0;
+}
+
+.product-category-text {
+  font-size: 0.85rem; /* Increased from 0.75rem */
+  color: #209216; /* Changed to green */
+  transform: translateY(-5px);
+  font-weight: 600;
+  margin: 0;
+  
+  text-transform: capitalize;
 }
 
 .action-buttons {
@@ -288,7 +355,7 @@ const handleAddToCart = (product: any) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
@@ -307,7 +374,6 @@ const handleAddToCart = (product: any) => {
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   border-color: #209216;
 }
@@ -351,8 +417,8 @@ const handleAddToCart = (product: any) => {
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
-  margin-top: 3rem;
-  padding-bottom: 2rem;
+  margin-top: 0.5rem; /* Reduced from 3rem */
+  padding-bottom: 9rem; /* Increased slightly to ensure space at the absolute bottom */
 }
 
 .page-numbers {

@@ -6,16 +6,23 @@ const props = defineProps<{
   isOpen: boolean;
 }>();
 
-const emit = defineEmits(['close', 'submitted']);
+const emit = defineEmits<{
+  (e: 'close'): void;
+  (e: 'submitted'): void;
+}>();
 
 const authStore = useAuthStore();
-const nom_produit = ref('');
-const quantite = ref(1);
-const description = ref('');
-const isSubmitting = ref(false);
-const showSuccess = ref(false);
+const nom_produit = ref<string>('');
+const quantite = ref<number>(1);
+const description = ref<string>('');
+const isSubmitting = ref<boolean>(false);
+const showSuccess = ref<boolean>(false);
 
 const submitForm = async () => {
+  if (!authStore.isAuthenticated) {
+    alert('Veuillez vous connecter pour envoyer une demande.');
+    return;
+  }
   if (!nom_produit.value || quantite.value <= 0) {
     alert('Veuillez remplir tous les champs obligatoires.');
     return;
@@ -23,7 +30,8 @@ const submitForm = async () => {
 
   isSubmitting.value = true;
   try {
-    const response = await fetch('http://127.0.0.1:8000/production/demande', {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+    const response = await fetch(`${API_BASE_URL}/production/demande`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

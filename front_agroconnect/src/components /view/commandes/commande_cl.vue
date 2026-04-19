@@ -13,7 +13,7 @@ const detailPopup = usePopup();
 const selectedOrder = ref<Order | null>(null);
 
 const activeFilter = ref('Tous');
-const filters = ['Tous', 'En attente', 'Confirmée', 'Validée', 'Annulée'];
+const filters = ['Toustransla', 'En attente', 'Confirmée', 'Validée', 'Annulée'];
 
 onMounted(async () => {
   if (authStore.user?.id) {
