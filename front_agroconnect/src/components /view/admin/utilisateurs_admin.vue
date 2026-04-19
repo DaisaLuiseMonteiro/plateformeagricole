@@ -4,30 +4,24 @@ import SidebarAdmin from '@/components /layout/sidebar-admin.vue'
 import Navebar from '@/components /layout/navebar.vue'
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import UserDetailPopup from '@/components /view/popup/UserDetailPopup.vue'
+import type { User } from '@/interface/User'
 
 const detailPopup = usePopup()
-const selectedUser = ref(null)
+const selectedUser = ref<User | null>(null)
 
-const openDetail = (user: any) => {
+const openDetail = (user: User) => {
   selectedUser.value = user
   detailPopup.openPopup()
 }
 
 const userStats = ref([
-  { label: 'Nombres inscrits', value: '1,520', color: '#209216' },
-  { label: 'Agriculteurs', value: '89', color: '#3b82f6' },
-  { label: 'Clients', value: '1,431', color: '#f59e0b' },
-  { label: 'Inscrits ce mois', value: '+124', color: '#8b5cf6' }
+  { label: 'Nombres inscrits', value: '0', color: '#209216' },
+  { label: 'Agriculteurs', value: '0', color: '#3b82f6' },
+  { label: 'Clients', value: '0', color: '#f59e0b' },
+  { label: 'Inscrits ce mois', value: '0', color: '#8b5cf6' }
 ])
 
-const users = ref([
-  { name: 'Amadou Diallo', email: 'diallo@email.com', role: 'Agriculteur', status: 'Actif', date: '15 Jan 2026' },
-  { name: 'Fatoumata Touré', email: 'toure@email.com', role: 'Agriculteur', status: 'Actif', date: '18 Jan 2026' },
-  { name: 'Moussa Sow', email: 'sow@email.com', role: 'Client', status: 'Actif', date: '20 Jan 2026' },
-  { name: 'Aminata Diop', email: 'diop@email.com', role: 'Client', status: 'Suspendu', date: '22 Jan 2026' },
-  { name: 'Boubacar Traoré', email: 'traore@email.com', role: 'Agriculteur', status: 'Actif', date: '25 Jan 2026' },
-  { name: 'Aïssatou Camara', email: 'camara@email.com', role: 'Client', status: 'Actif', date: '28 Jan 2026' }
-])
+const users = ref<User[]>([])
 
 const getStatusClass = (status: string) => {
   return status === 'Actif' ? 'status-active' : 'status-suspended'
@@ -121,7 +115,7 @@ const { currentPage, totalPages, paginatedItems: paginatedUsers, prevPage, nextP
     
     <!-- Modal de détails utilisateur -->
     <UserDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedUser" 
       :user="selectedUser" 
       @close="detailPopup.closePopup" 
     />

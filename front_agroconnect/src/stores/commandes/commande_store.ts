@@ -52,7 +52,7 @@ export const useCommandeStore = defineStore('commande', () => {
     }
   }
 
-  const creerCommande = async (commandeData: any) => {
+  const creerCommande = async (commandeData: import('@/interface/Order').CommandeData) => {
     loading.value = true
     error.value = null
     try {

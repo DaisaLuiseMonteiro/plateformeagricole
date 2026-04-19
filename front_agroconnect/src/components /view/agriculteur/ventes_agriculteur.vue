@@ -4,37 +4,27 @@ import SidebarAgriculteur from '@/components /layout/sidebar-agriculteur.vue'
 import Navebar from '@/components /layout/navebar.vue'
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import SaleDetailPopup from '@/components /view/popup/SaleDetailPopup.vue'
+import type { Sale } from '@/interface/Sale'
 
 const detailPopup = usePopup()
-const selectedSale = ref(null)
+const selectedSale = ref<Sale | null>(null)
 
-const openDetail = (sale: any) => {
+const openDetail = (sale: Sale) => {
   selectedSale.value = sale
   detailPopup.openPopup()
 }
 
 const stats = ref([
-  { label: 'Ventes totales', value: '4.2M FCFA', trend: '+15%', trendUp: true, icon: 'trending', color: '#209216' },
-  { label: 'Ventes Fruits', value: '1.2M FCFA', trend: '+8%', trendUp: true, icon: 'apple', color: '#f43f5e' },
-  { label: 'Ventes Légumes', value: '1.8M FCFA', trend: '+22%', trendUp: true, icon: 'leaf', color: '#10b981' },
-  { label: 'Ventes Céréales', value: '1.2M FCFA', trend: '-5%', trendUp: false, icon: 'wheat', color: '#8b5cf6' }
+  { label: 'Ventes totales', value: '0 FCFA', trend: '+0%', trendUp: true, icon: 'trending', color: '#209216' },
+  { label: 'Ventes Fruits', value: '0 FCFA', trend: '+0%', trendUp: true, icon: 'apple', color: '#f43f5e' },
+  { label: 'Ventes Légumes', value: '0 FCFA', trend: '+0%', trendUp: true, icon: 'leaf', color: '#10b981' },
+  { label: 'Ventes Céréales', value: '0 FCFA', trend: '+0%', trendUp: false, icon: 'wheat', color: '#8b5cf6' }
 ])
 
 const searchQuery = ref('')
 const selectedCategory = ref('Toutes les catégories')
 
-const salesData = ref([
-  { id: 'V-2026-001', date: '18/04/2026', client: 'Jean Dupont', itemsCount: 3, total: '12,000 FCFA', category: 'Légumes', status: 'Terminée' },
-  { id: 'V-2026-002', date: '17/04/2026', client: 'Marie Curie', itemsCount: 1, total: '40,000 FCFA', category: 'Féculents', status: 'En cours' },
-  { id: 'V-2026-003', date: '17/04/2026', client: 'Pierre Gasly', itemsCount: 2, total: '37,500 FCFA', category: 'Céréales', status: 'Terminée' },
-  { id: 'V-2026-004', date: '16/04/2026', client: 'Alice Wonderland', itemsCount: 5, total: '14,250 FCFA', category: 'Condiments', status: 'Terminée' },
-  { id: 'V-2026-005', date: '15/04/2026', client: 'Bob Marley', itemsCount: 2, total: '22,000 FCFA', category: 'Légumes', status: 'Terminée' },
-  { id: 'V-2026-006', date: '14/04/2026', client: 'Charlie Chaplin', itemsCount: 4, total: '5,600 FCFA', category: 'Légumes', status: 'Annulée' },
-  { id: 'V-2026-007', date: '12/04/2026', client: 'David Hasselhoff', itemsCount: 1, total: '2,500 FCFA', category: 'Épices', status: 'Terminée' },
-  { id: 'V-2026-008', date: '10/04/2026', client: 'Eva Green', itemsCount: 6, total: '15,600 FCFA', category: 'Légumes', status: 'Terminée' },
-  { id: 'V-2026-009', date: '08/04/2026', client: 'Frank Sinatra', itemsCount: 2, total: '36,000 FCFA', category: 'Fruits', status: 'Terminée' },
-  { id: 'V-2026-010', date: '05/04/2026', client: 'Grace Kelly', itemsCount: 3, total: '18,750 FCFA', category: 'Fruits', status: 'En cours' }
-])
+const salesData = ref<Sale[]>([])
 
 const filteredSales = computed(() => {
   return salesData.value.filter(s => {
@@ -138,7 +128,7 @@ const { currentPage, totalPages, paginatedItems: paginatedSales, prevPage, nextP
     
     <!-- Modal de détails de la vente -->
     <SaleDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedSale" 
       :sale="selectedSale" 
       @close="detailPopup.closePopup" 
     />

@@ -6,13 +6,14 @@ import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import { useCommandeStore } from '@/stores/commandes/commande_store'
 import { useAuthStore } from '@/stores/auth/auth_store'
 import OrderDetailPopup from '@/components /view/popup/OrderDetailPopup.vue'
+import type { Order } from '@/interface/Order'
 
 const detailPopup = usePopup()
 const commandeStore = useCommandeStore()
 const authStore = useAuthStore()
-const selectedOrder = ref(null)
+const selectedOrder = ref<Order | null>(null)
 
-const openDetail = (order: any) => {
+const openDetail = (order: Order) => {
   selectedOrder.value = order
   detailPopup.openPopup()
 }
@@ -176,7 +177,7 @@ const formatPrice = (value: number) =>
     
     <!-- Modal de détails de la commande -->
     <OrderDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedOrder" 
       :order="selectedOrder" 
       @close="detailPopup.closePopup" 
     />

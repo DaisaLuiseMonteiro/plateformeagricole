@@ -13,36 +13,13 @@ const isAuthPopupOpen = ref(false);
 const authPopupMessage = ref('');
 const authPopupVerb = ref('');
 
-const products = [
-  { id: '1', name: 'Banane', category: 'Fruits', price: 500, displayPrice: '500 CFA/kg', image: '/images/client.png', stock: 100, agriculteur_id: 'a1' },
-  { id: '2', name: 'Mangue', category: 'Fruits', price: 700, displayPrice: '700 CFA/kg', image: '/images/client.png', stock: 50, agriculteur_id: 'a1' },
-// ... pruned for brevity but I will keep the structure similar.
-// Actually I should probably keep all of them or at least many.
-  { id: '3', name: 'Orange', category: 'Fruits', price: 600, displayPrice: '600 CFA/kg', image: '/images/client.png', stock: 200, agriculteur_id: 'a1' },
-  { id: '4', name: 'Pomme', category: 'Fruits', price: 1500, displayPrice: '1500 CFA/kg', image: '/images/client.png', stock: 30, agriculteur_id: 'a1' },
-  { id: '5', name: 'Ananas', category: 'Fruits', price: 800, displayPrice: '800 CFA/pièce', image: '/images/client.png', stock: 40, agriculteur_id: 'a1' },
-  { id: '6', name: 'Chou', category: 'Légumes', price: 600, displayPrice: '600 CFA/kg', image: '/images/client.png', stock: 100, agriculteur_id: 'a2' },
-  { id: '7', name: 'Fraise', category: 'Fruits', price: 2500, displayPrice: '2500 CFA/kg', image: '/images/client.png', stock: 20, agriculteur_id: 'a2' },
-  { id: '8', name: 'Kiwi', category: 'Fruits', price: 1800, displayPrice: '1800 CFA/kg', image: '/images/client.png', stock: 25, agriculteur_id: 'a2' },
-  { id: '9', name: 'Oignon', category: 'Légumes', price: 900, displayPrice: '900 CFA/pièce', image: '/images/client.png', stock: 150, agriculteur_id: 'a2' },
-  { id: '10', name: 'Tomate', category: 'Légumes', price: 800, displayPrice: '800 CFA/kg', image: '/images/client.png', stock: 80, agriculteur_id: 'a2' },
-  { id: '11', name: 'Carotte', category: 'Légumes', price: 400, displayPrice: '400 CFA/kg', image: '/images/client.png', stock: 120, agriculteur_id: 'a3' },
-  { id: '12', name: 'Pomme de terre', category: 'Légumes', price: 600, displayPrice: '600 CFA/kg', image: '/images/client.png', stock: 300, agriculteur_id: 'a3' },
-  { id: '13', name: 'Maïs', category: 'Céréales', price: 300, displayPrice: '300 CFA/épi', image: '/images/client.png', stock: 500, agriculteur_id: 'a3' },
-  { id: '14', name: 'Riz', category: 'Céréales', price: 500, displayPrice: '500 CFA/kg', image: '/images/client.png', stock: 1000, agriculteur_id: 'a3' },
-  { id: '15', name: 'Millet', category: 'Céréales', price: 450, displayPrice: '450 CFA/kg', image: '/images/client.png', stock: 400, agriculteur_id: 'a3' },
-  { id: '16', name: 'Gombo', category: 'Légumes', price: 700, displayPrice: '700 CFA/kg', image: '/images/client.png', stock: 60, agriculteur_id: 'a4' },
-  { id: '17', name: 'Aubergine', category: 'Légumes', price: 500, displayPrice: '500 CFA/kg', image: '/images/client.png', stock: 90, agriculteur_id: 'a4' },
-  { id: '18', name: 'Patate douce', category: 'Légumes', price: 550, displayPrice: '550 CFA/kg', image: '/images/client.png', stock: 150, agriculteur_id: 'a4' },
-  { id: '19', name: 'Ignâme', category: 'Légumes', price: 1200, displayPrice: '1200 CFA/kg', image: '/images/client.png', stock: 100, agriculteur_id: 'a4' },
-  { id: '20', name: 'Piment', category: 'Légumes', price: 1500, displayPrice: '1500 CFA/kg', image: '/images/client.png', stock: 40, agriculteur_id: 'a4' }
-];
+const products: { id: string; name: string; category: string; price: number; displayPrice: string; image: string; stock: number; agriculteur_id: string }[] = [];
 
 const categories = [
-  { id: 1, name: 'Tous les produits', count: 107, icon: '📦' },
-  { id: 2, name: 'Légumes', count: 45, icon: '🥬' },
-  { id: 3, name: 'Fruits', count: 32, icon: '🥭' },
-  { id: 4, name: 'Céréales', count: 18, icon: '🌾' }
+  { id: 1, name: 'Tous les produits', count: 0, icon: '📦' },
+  { id: 2, name: 'Légumes', count: 0, icon: '🥬' },
+  { id: 3, name: 'Fruits', count: 0, icon: '🥭' },
+  { id: 4, name: 'Céréales', count: 0, icon: '🌾' }
 ];
 
 const selectedCategory = ref('Tous les produits');

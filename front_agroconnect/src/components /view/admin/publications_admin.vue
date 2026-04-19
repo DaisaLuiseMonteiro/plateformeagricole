@@ -4,77 +4,34 @@ import SidebarAdmin from '@/components /layout/sidebar-admin.vue'
 import Navebar from '@/components /layout/navebar.vue'
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import ProductDetailPopup from '@/components /view/popup/ProductDetailPopup.vue'
+import type { Product } from '@/interface/Product'
 
 const detailPopup = usePopup()
-const selectedPub = ref(null)
+const selectedPub = ref<Product | null>(null)
 
 const openDetail = (pub: any) => {
   // Mapper les champs de publication vers le format attendu par ProductDetailPopup
   selectedPub.value = {
-    ...pub,
+    id: pub.id.toString(),
     name: pub.title,
     photo: '', // pas d'image dans le mock actuel
-    prix_unitaire: 'N/A',
-    quantite_stock: pub.quantity,
-    categorie: 'Production'
-  }
+    prix_unitaire: 0,
+    quantite_stock: parseInt(pub.quantity.replace(/[^0-9]/g, '')),
+    categorie: 'Production',
+    description: pub.description,
+    agriculteur_id: ''
+  } as Product
   detailPopup.openPopup()
 }
 
 const pubStats = ref([
-  { label: 'Total publication', value: '856', color: '#209216' },
-  { label: 'Publications validées', value: '742', color: '#3b82f6' },
-  { label: 'En attentes', value: '86', color: '#f59e0b' },
-  { label: 'Publication rejets', value: '28', color: '#ef4444' }
+  { label: 'Total publication', value: '0', color: '#209216' },
+  { label: 'Publications validées', value: '0', color: '#3b82f6' },
+  { label: 'En attentes', value: '0', color: '#f59e0b' },
+  { label: 'Publication rejets', value: '0', color: '#ef4444' }
 ])
 
-const publications = ref([
-  { 
-    id: 1, 
-    title: 'Tomates Bio – Saison 2026', 
-    status: 'En attente', 
-    description: 'Production de tomates biologiques, variété Roma, 2 tonnes disponibles.',
-    farmer: 'Ferme Diallo',
-    quantity: '2,000 kg',
-    date: '24 Fév 2026'
-  },
-  { 
-    id: 2, 
-    title: 'Maïs Biologique – Récolte Mars', 
-    status: 'Publiée', 
-    description: 'Maïs cultivé sans pesticides, prêt pour distribution.',
-    farmer: 'Ferme Touré',
-    quantity: '5,000 kg',
-    date: '10 Mar 2026'
-  },
-  { 
-    id: 3, 
-    title: 'Mangues Kent – Export', 
-    status: 'En attente', 
-    description: 'Mangues Kent premium pour le marché local et export.',
-    farmer: 'Ferme Konaté',
-    quantity: '1,500 kg',
-    date: '15 Mar 2026'
-  },
-  { 
-    id: 4, 
-    title: 'Oignons Violets – Stock', 
-    status: 'Rejetée', 
-    description: 'Oignons violets, qualité supérieure, disponibles immédiatement.',
-    farmer: 'Ferme Bah',
-    quantity: '3,000 kg',
-    date: '18 Mar 2026'
-  },
-  { 
-    id: 5, 
-    title: 'Riz Paddy – Campagne 2026', 
-    status: 'Publiée', 
-    description: 'Riz paddy local, première qualité, 10 tonnes disponibles.',
-    farmer: 'Ferme Sangaré',
-    quantity: '10,000 kg',
-    date: '20 Mar 2026'
-  }
-])
+const publications = ref([])
 
 const { currentPage, totalPages, paginatedItems: paginatedPublications, prevPage, nextPage } = usePagination(publications, 4)
 </script>
@@ -168,7 +125,7 @@ const { currentPage, totalPages, paginatedItems: paginatedPublications, prevPage
     
     <!-- Modal de détails de la publication -->
     <ProductDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedPub" 
       :product="selectedPub" 
       @close="detailPopup.closePopup" 
     />

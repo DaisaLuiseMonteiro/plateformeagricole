@@ -1,14 +1,15 @@
-# Étape 1 : Build de l'application
+# Utiliser Node pour le build et le service local
 FROM node:20-alpine as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run build-only
 
-# Étape 2 : Serveur de production (Nginx)
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Étape finale avec serve pour le test local (Vercel gérera la prod indépendamment)
+FROM node:20-alpine
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=build-stage /app/dist /app/dist
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "dist", "-l", "80"]

@@ -4,36 +4,25 @@ import SidebarAdmin from '@/components /layout/sidebar-admin.vue'
 import Navebar from '@/components /layout/navebar.vue'
 
 const stats = ref([
-  { id: 1, label: 'Commandes totales', value: '1,248', trend: '+12.5%', trendUp: true, icon: 'cart', color: '#209216' },
-  { id: 2, label: 'Produits actifs', value: '356', trend: '+4.2%', trendUp: true, icon: 'box', color: '#3b82f6' },
-  { id: 3, label: 'Agriculteurs', value: '89', trend: '+8.1%', trendUp: true, icon: 'users', color: '#8b5cf6' },
-  { id: 4, label: 'Revenus (FCFA)', value: '12.4M', trend: '-2.3%', trendUp: false, icon: 'chart', color: '#ef4444' }
+  { id: 1, label: 'Commandes totales', value: '0', trend: '+0%', trendUp: true, icon: 'cart', color: '#209216' },
+  { id: 2, label: 'Produits actifs', value: '0', trend: '+0%', trendUp: true, icon: 'box', color: '#3b82f6' },
+  { id: 3, label: 'Agriculteurs', value: '0', trend: '+0%', trendUp: true, icon: 'users', color: '#8b5cf6' },
+  { id: 4, label: 'Revenus (FCFA)', value: '0', trend: '+0%', trendUp: false, icon: 'chart', color: '#ef4444' }
 ])
 
 const orderBars = [
-  { label: 'Validées', value: 160, color: '#209216' },
-  { label: 'En attente', value: 90, color: '#f59e0b' },
-  { label: 'Rejetées', value: 40, color: '#ef4444' }
+  { label: 'Validées', value: 0, color: '#209216' },
+  { label: 'En attente', value: 0, color: '#f59e0b' },
+  { label: 'Rejetées', value: 0, color: '#ef4444' }
 ]
 
 const categoryStats = [
-  { label: 'Fruits', value: 40, color: '#f43f5e' },
-  { label: 'Céréales', value: 35, color: '#8b5cf6' },
-  { label: 'Légumes', value: 25, color: '#10b981' }
+  { label: 'Fruits', value: 0, color: '#f43f5e' },
+  { label: 'Céréales', value: 0, color: '#8b5cf6' },
+  { label: 'Légumes', value: 0, color: '#10b981' }
 ]
 
-const recentUsers = ref([
-  { name: 'Moussa Sow', email: 'moussa@email.com' },
-  { name: 'Fatou Diop', email: 'fatou@email.com' },
-  { name: 'Ibrahima Fall', email: 'ibra@email.com' },
-  { name: 'Awa Ndiaye', email: 'awa@email.com' },
-  { name: 'Samba Kane', email: 'samba@email.com' },
-  { name: 'Binta Tall', email: 'binta@email.com' },
-  { name: 'Ousmane Sy', email: 'ousmane@email.com' },
-  { name: 'Mariam Ba', email: 'mariam@email.com' },
-  { name: 'Modou Faye', email: 'modou@email.com' },
-  { name: 'Yacine Gaye', email: 'yacine@email.com' }
-])
+const recentUsers = ref<{ name: string; email: string }[]>([])
 </script>
 
 <template>

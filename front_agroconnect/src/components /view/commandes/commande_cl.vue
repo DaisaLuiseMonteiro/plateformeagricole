@@ -5,11 +5,12 @@ import { useCommandeStore } from '@/stores/commandes/commande_store';
 import { useAuthStore } from '@/stores/auth/auth_store';
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store';
 import OrderDetailPopup from '@/components /view/popup/OrderDetailPopup.vue';
+import type { Order } from '@/interface/Order';
 
 const commandeStore = useCommandeStore();
 const authStore = useAuthStore();
 const detailPopup = usePopup();
-const selectedOrder = ref(null);
+const selectedOrder = ref<Order | null>(null);
 
 const activeFilter = ref('Tous');
 const filters = ['Tous', 'En attente', 'Confirmée', 'Validée', 'Annulée'];
@@ -208,7 +209,7 @@ const handleValidate = async (id: string) => {
 
     <!-- Detail Popup -->
     <OrderDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedOrder" 
       :order="selectedOrder" 
       @close="detailPopup.closePopup" 
     />

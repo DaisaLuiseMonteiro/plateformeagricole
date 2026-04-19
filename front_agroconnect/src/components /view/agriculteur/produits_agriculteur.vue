@@ -7,14 +7,15 @@ import { useProduitStore } from '@/stores/produit/produit_store'
 import { useAuthStore } from '@/stores/auth/auth_store'
 import AddProd from '@/components /view/produit/add_prod.vue'
 import ProductDetailPopup from '@/components /view/popup/ProductDetailPopup.vue'
+import type { Product } from '@/interface/Product'
 
 const { isOpen, openPopup, closePopup } = usePopup()
 const detailPopup = usePopup()
 const produitStore = useProduitStore()
 const authStore = useAuthStore()
-const selectedProduct = ref(null)
+const selectedProduct = ref<Product | null>(null)
 
-const openDetail = (prod: any) => {
+const openDetail = (prod: Product) => {
   selectedProduct.value = prod
   detailPopup.openPopup()
 }
@@ -182,7 +183,7 @@ const handleDelete = async (id: string) => {
 
     <!-- Modal de détails du produit -->
     <ProductDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedProduct" 
       :product="selectedProduct" 
       @close="detailPopup.closePopup" 
     />

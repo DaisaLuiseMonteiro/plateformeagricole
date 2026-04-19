@@ -4,12 +4,13 @@ import { useRouter } from 'vue-router';
 import Header from '@/components /layout/header.vue';
 import { usePanierStore } from '@/stores/panier/panier_store';
 import { useAuthStore } from '@/stores/auth/auth_store';
+import type { CartItem } from '@/interface/CartItem';
 
 const router = useRouter();
 const panierStore = usePanierStore();
 const authStore = useAuthStore();
 
-const cartItems = computed(() => panierStore.items);
+const cartItems = computed<CartItem[]>(() => panierStore.items);
 
 const updateQuantity = (id: string, delta: number) => {
   const item = panierStore.items.find(i => i.product.id === id);
@@ -62,7 +63,7 @@ const goToHome = () => router.push('/');
       <div class="cart-items">
         <div v-for="item in cartItems" :key="item.product.id" class="cart-item-card">
           <div class="item-image-box">
-            <img :src="item.product.photo || '/images/client.png'" :alt="item.product.description" />
+            <img :src="item.product.photo || '/images/client.png'" :alt="item.product.description ?? undefined" />
           </div>
           <div class="item-details">
             <h3 class="item-name">{{ item.product.name }}</h3>

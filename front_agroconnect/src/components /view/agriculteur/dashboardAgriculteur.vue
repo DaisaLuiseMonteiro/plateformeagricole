@@ -4,33 +4,22 @@ import SidebarAgriculteur from '@/components /layout/sidebar-agriculteur.vue'
 import Navebar from '@/components /layout/navebar.vue'
 
 const stats = ref([
-  { id: 1, label: 'Ventes totales', value: '87', trend: '+12.5%', trendUp: true, icon: 'cart', color: '#209216' },
-  { id: 2, label: 'Produits actifs', value: '12', trend: '+4.2%', trendUp: true, icon: 'box', color: '#3b82f6' },
-  { id: 3, label: 'Revenus', value: '2.4M FCFA', trend: '+8.1%', trendUp: true, icon: 'trending', color: '#10b981' },
-  { id: 4, label: 'Alertes stock', value: '3', trend: '-2.3%', trendUp: false, icon: 'alert', color: '#ef4444' }
+  { id: 1, label: 'Ventes totales', value: '0', trend: '+0%', trendUp: true, icon: 'cart', color: '#209216' },
+  { id: 2, label: 'Produits actifs', value: '0', trend: '+0%', trendUp: true, icon: 'box', color: '#3b82f6' },
+  { id: 3, label: 'Revenus', value: '0 FCFA', trend: '+0%', trendUp: true, icon: 'trending', color: '#10b981' },
+  { id: 4, label: 'Alertes stock', value: '0', trend: '+0%', trendUp: false, icon: 'alert', color: '#ef4444' }
 ])
 
-const salesData = [35, 42, 38, 55, 48, 87] // 6 mois
+const salesData: number[] = []
 const months = ['Jan', 'Féb', 'Mar', 'Avr', 'Mai', 'Juin']
 
 const categoryStats = [
-  { label: 'Céréales', value: 45, color: '#8b5cf6' },
-  { label: 'Légumes', value: 30, color: '#10b981' },
-  { label: 'Fruits', value: 25, color: '#f43f5e' }
+  { label: 'Céréales', value: 0, color: '#8b5cf6' },
+  { label: 'Légumes', value: 0, color: '#10b981' },
+  { label: 'Fruits', value: 0, color: '#f43f5e' }
 ]
 
-const recentProducts = ref([
-  { id: 1, name: 'Tomates Bio', date: '18/04/2026', published: true },
-  { id: 2, name: 'Oignons Jaunes', date: '17/04/2026', published: true },
-  { id: 3, name: 'Pommes de Terre', date: '16/04/2026', published: false },
-  { id: 4, name: 'Carottes Vertes', date: '15/04/2026', published: true },
-  { id: 5, name: 'Maïs Doux', date: '14/04/2026', published: false },
-  { id: 6, name: 'Piments Rouges', date: '12/04/2026', published: true },
-  { id: 7, name: 'Aubergines', date: '10/04/2026', published: true },
-  { id: 8, name: 'Choux-fleurs', date: '08/04/2026', published: false },
-  { id: 9, name: 'Laitue', date: '05/04/2026', published: true },
-  { id: 10, name: 'Radis', date: '02/04/2026', published: true }
-])
+const recentProducts = ref<{ id: number; name: string; date: string; published: boolean }[]>([])
 </script>
 
 <template>

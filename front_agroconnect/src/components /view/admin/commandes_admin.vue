@@ -4,33 +4,27 @@ import SidebarAdmin from '@/components /layout/sidebar-admin.vue'
 import Navebar from '@/components /layout/navebar.vue'
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import OrderDetailPopup from '@/components /view/popup/OrderDetailPopup.vue'
+import type { Order } from '@/interface/Order'
 
 const detailPopup = usePopup()
-const selectedOrder = ref(null)
+const selectedOrder = ref<Order | null>(null)
 
-const openDetail = (order: any) => {
+const openDetail = (order: Order) => {
   selectedOrder.value = order
   detailPopup.openPopup()
 }
 
 const orderStats = ref([
-  { label: 'Commandes totales', value: '1,248', color: '#209216' },
-  { label: 'Commandes en attente', value: '45', color: '#f59e0b' },
-  { label: 'Commandes rejetées', value: '12', color: '#ef4444' },
-  { label: 'Commande par production', value: '156', color: '#3b82f6' }
+  { label: 'Commandes totales', value: '0', color: '#209216' },
+  { label: 'Commandes en attente', value: '0', color: '#f59e0b' },
+  { label: 'Commandes rejetées', value: '0', color: '#ef4444' },
+  { label: 'Commande par production', value: '0', color: '#3b82f6' }
 ])
 
 const activeFilter = ref('Tous')
 const filters = ['Tous', 'En cours', 'Validée', 'En attente', 'Livrée']
 
-const orders = ref([
-  { id: 'CMD-001', location: 'Marché Central', details: 'Tomates (500kg) · 750,000 FCFA', status: 'En cours', progress: 40 },
-  { id: 'CMD-002', location: 'Restaurant Le Vert', details: 'Laitue (200kg) · 120,000 FCFA', status: 'Validée', progress: 100 },
-  { id: 'CMD-003', location: 'Supermarché Bio', details: 'Carottes (1T) · 900,000 FCFA', status: 'En attente', progress: 0 },
-  { id: 'CMD-004', location: 'Hôtel Palm', details: 'Oignons (300kg) · 270,000 FCFA', status: 'Livrée', progress: 100 },
-  { id: 'CMD-005', location: 'Cantine Scolaire', details: 'Riz (2T) · 1,000,000 FCFA', status: 'En cours', progress: 65 },
-  { id: 'CMD-006', location: 'Grossiste Dakar', details: 'Maïs (3T) · 1,500,000 FCFA', status: 'En attente', progress: 0 }
-])
+const orders = ref<Order[]>([])
 
 const getStatusClass = (status: string) => {
   if (status === 'En cours') return 'status-ongoing'
@@ -140,7 +134,7 @@ const { currentPage, totalPages, paginatedItems: paginatedOrders, prevPage, next
     
     <!-- Modal de détails de la commande -->
     <OrderDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedOrder" 
       :order="selectedOrder" 
       @close="detailPopup.closePopup" 
     />

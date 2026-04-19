@@ -100,7 +100,9 @@ export const useAuthStore = defineStore('auth', {
     // ============================================================
     // SECTION : INSCRIPTION (REGISTER)
     // ============================================================
-    async register(userData: any) {
+    // SECTION : INSCRIPTION (REGISTER)
+    // ============================================================
+    async register(userData: import('@/interface/User').RegisterData) {
       this.fieldErrors = {};
       this.error = null;
 

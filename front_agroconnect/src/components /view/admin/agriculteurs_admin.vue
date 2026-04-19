@@ -5,14 +5,15 @@ import Navebar from '@/components /layout/navebar.vue'
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import { useAuthStore } from '@/stores/auth/auth_store'
 import UserDetailPopup from '@/components /view/popup/UserDetailPopup.vue'
+import type { Agriculteur } from '@/interface/Agriculteur'
 
 const detailPopup = usePopup()
 const authStore = useAuthStore()
-const selectedFarmer = ref(null)
-const farmersList = ref<any[]>([])
+const selectedFarmer = ref<Agriculteur | null>(null)
+const farmersList = ref<Agriculteur[]>([])
 
-const openDetail = (farmer: any) => {
-  selectedFarmer.value = { ...farmer, role: 'Agriculteur' }
+const openDetail = (farmer: Agriculteur) => {
+  selectedFarmer.value = { ...farmer }
   detailPopup.openPopup()
 }
 
@@ -157,7 +158,7 @@ const toggleActivation = async (farmer: any) => {
     
     <!-- Modal de détails de l'agriculteur -->
     <UserDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedFarmer" 
       :user="selectedFarmer" 
       @close="detailPopup.closePopup" 
     />

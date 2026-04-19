@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth_store'
 import { uploadToCloudinary } from '@/utils/cloudinary'
+import type { User } from '@/interface/User'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -12,6 +13,7 @@ const photoFile = ref<File | null>(null)
 const photoPreview = ref('')
 const isLoading = ref(false)
 const successMessage = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
 
 const form = ref({
   nom: '',
@@ -38,6 +40,16 @@ const onFileChange = (e: Event) => {
 }
 
 const handleSubmit = async () => {
+  // Réinitialiser les erreurs locales
+  authStore.fieldErrors = {}
+  
+  // Validation locale du téléphone (format sénégalais)
+  const phoneRegex = /^(70|71|75|76|77|78)[0-9]{7}$/
+  if (!phoneRegex.test(form.value.telephone)) {
+    authStore.fieldErrors.telephone = "Le numéro doit commencer par 70, 71, 75, 76, 77 ou 78 et contenir 9 chiffres au total (ex: 775312222)."
+    return
+  }
+
   isLoading.value = true
   try {
     let photoUrl = ''
@@ -95,7 +107,7 @@ const handleSubmit = async () => {
           <!-- Photo de profil -->
           <div class="form-group photo-upload-container">
             <label class="form-label">Photo de profil</label>
-            <div class="photo-preview-wrapper" @click="$refs.fileInput.click()">
+            <div class="photo-preview-wrapper" @click="fileInput?.click()">
               <img v-if="photoPreview" :src="photoPreview" class="photo-preview" />
               <div v-else class="photo-placeholder">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -164,7 +176,7 @@ const handleSubmit = async () => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
-              <input type="tel" v-model="form.telephone" placeholder="+212 6XX XXX XXX" class="form-input" :class="{ 'input-error': authStore.fieldErrors.telephone }" />
+              <input type="tel" v-model="form.telephone" placeholder="775312222" class="form-input" :class="{ 'input-error': authStore.fieldErrors.telephone }" />
             </div>
             <span v-if="authStore.fieldErrors.telephone" class="error-msg">{{ authStore.fieldErrors.telephone }}</span>
           </div>

@@ -4,35 +4,27 @@ import SidebarAdmin from '@/components /layout/sidebar-admin.vue'
 import Navebar from '@/components /layout/navebar.vue'
 import { usePagination, usePopup } from '@/stores/utilitaires/utilitaire_store'
 import ProductDetailPopup from '@/components /view/popup/ProductDetailPopup.vue'
+import type { Product } from '@/interface/Product'
 
 const detailPopup = usePopup()
-const selectedProduct = ref(null)
+const selectedProduct = ref<Product | null>(null)
 
-const openDetail = (prod: any) => {
+const openDetail = (prod: Product) => {
   selectedProduct.value = prod
   detailPopup.openPopup()
 }
 
 const productStats = ref([
-  { label: 'Tous les produits', value: '482', icon: 'box', color: '#209216' },
-  { label: 'Produits publiés', value: '356', icon: 'check', color: '#3b82f6' },
-  { label: 'Produits rejetés', value: '24', icon: 'x', color: '#ef4444' },
-  { label: 'Stocks finis', value: '12', icon: 'alert', color: '#f59e0b' }
+  { label: 'Tous les produits', value: '0', icon: 'box', color: '#209216' },
+  { label: 'Produits publiés', value: '0', icon: 'check', color: '#3b82f6' },
+  { label: 'Produits rejetés', value: '0', icon: 'x', color: '#ef4444' },
+  { label: 'Stocks finis', value: '0', icon: 'alert', color: '#f59e0b' }
 ])
 
 const activeFilter = ref('Tous')
 const filters = ['Tous', 'Légumes', 'Céréales', 'Fruits']
 
-const products = ref([
-  { id: 1, name: 'Tomates cerises', category: 'Légumes', price: '1,500 FCFA/kg', stock: 450, status: 'Actif' },
-  { id: 2, name: 'Maïs Bio', category: 'Céréales', price: '800 FCFA/kg', stock: 2000, status: 'Actif' },
-  { id: 3, name: 'Laitue romaine', category: 'Légumes', price: '600 FCFA/kg', stock: 0, status: 'Rupture' },
-  { id: 4, name: 'Mangues Kent', category: 'Fruits', price: '2,000 FCFA/kg', stock: 800, status: 'Actif' },
-  { id: 5, name: 'Riz paddy', category: 'Céréales', price: '500 FCFA/kg', stock: 5000, status: 'Actif' },
-  { id: 6, name: 'Piment rouge', category: 'Légumes', price: '3,000 FCFA/kg', stock: 120, status: 'Faible' },
-  { id: 7, name: 'Ananas', category: 'Fruits', price: '1,200 FCFA/pièce', stock: 300, status: 'Actif' },
-  { id: 8, name: 'Oignons violets', category: 'Légumes', price: '900 FCFA/kg', stock: 1500, status: 'Actif' }
-])
+const products = ref<Product[]>([])
 
 const getStatusClass = (status: string) => {
   if (status === 'Actif') return 'status-active'
@@ -143,7 +135,7 @@ const { currentPage, totalPages, paginatedItems: paginatedProducts, prevPage, ne
     
     <!-- Modal de détails du produit -->
     <ProductDetailPopup 
-      v-if="detailPopup.isOpen.value" 
+      v-if="detailPopup.isOpen.value && selectedProduct" 
       :product="selectedProduct" 
       @close="detailPopup.closePopup" 
     />
