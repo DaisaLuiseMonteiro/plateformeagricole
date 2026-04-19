@@ -48,7 +48,7 @@ export const useAuthStore = defineStore('auth', {
         this.fieldErrors.email = "Format d'email invalide (ex: user@gmail.com)";
       }
       if (!mot_de_pass) {
-        this.fieldErrors.mot_de_pass = "Le mot de passe est requis";
+        this.fieldErrors.mot_de_pass = "Le mot de passe est requis!";
       }
 
       if (Object.keys(this.fieldErrors).length > 0) return;

@@ -145,7 +145,7 @@ def rejeter_commande(commande_id: str, db: Session = Depends(get_db)):
 def valider_reception_commande(commande_id: str, db: Session = Depends(get_db)):
     commande = db.query(CommandeModel).filter(CommandeModel.id == commande_id).first()
     if not commande:
-        raise HTTPException(status_code=404, detail="Commande non trouvée")
+        raise HTTPException(status_code=404, detail="Commande non trouvée!")
     
     commande.statut = StatutEnum.VALIDEE
     db.commit()
