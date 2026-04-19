@@ -272,7 +272,7 @@ const goToHome = () => router.push('/');
 }
 
 .delete-btn:hover {
-  background: #fee2e2;
+  background: #fee2e1;
   transform: scale(1.1);
 }
 
