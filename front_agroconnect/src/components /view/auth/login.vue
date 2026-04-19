@@ -9,6 +9,11 @@ const authStore = useAuthStore()
 const email = ref('')
 const mot_de_pass = ref('')
 const isLoading = ref(false)
+const showPassword = ref(false)
+
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+}
 
 // Connexion
 const handleLogin = async () => {
